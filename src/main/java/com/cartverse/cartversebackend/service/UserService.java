@@ -2,6 +2,7 @@ package com.cartverse.cartversebackend.service;
 
 import com.cartverse.cartversebackend.dto.RegisterRequest;
 import com.cartverse.cartversebackend.entity.User;
+import com.cartverse.cartversebackend.exception.EmailAlreadyExistsException;
 import com.cartverse.cartversebackend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ public class UserService {
         Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
 
         if (existingUser.isPresent()){
-            throw new RuntimeException("User already Exist with this email");
+            throw new EmailAlreadyExistsException("User already Exist with this email");
         }
 
         User user = new User();
