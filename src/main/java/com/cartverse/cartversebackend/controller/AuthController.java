@@ -2,6 +2,7 @@ package com.cartverse.cartversebackend.controller;
 
 import com.cartverse.cartversebackend.dto.RegisterRequest;
 import com.cartverse.cartversebackend.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody RegisterRequest request){
+    public ResponseEntity<String> registerUser(@Valid @RequestBody RegisterRequest request){
 
         userService.registerUser(request);
         return ResponseEntity.status(HttpStatus.CREATED)
