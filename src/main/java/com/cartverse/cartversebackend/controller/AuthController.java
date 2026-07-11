@@ -1,5 +1,6 @@
 package com.cartverse.cartversebackend.controller;
 
+import com.cartverse.cartversebackend.dto.LoginRequest;
 import com.cartverse.cartversebackend.dto.RegisterRequest;
 import com.cartverse.cartversebackend.service.UserService;
 import jakarta.validation.Valid;
@@ -26,5 +27,12 @@ public class AuthController {
         userService.registerUser(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body("User registered successfully");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> loginUser(@Valid @RequestBody LoginRequest request){
+        userService.loginUser(request);
+        return ResponseEntity.ok("Login successful");
+
     }
 }
