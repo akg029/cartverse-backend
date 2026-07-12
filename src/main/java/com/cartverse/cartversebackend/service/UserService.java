@@ -6,6 +6,7 @@ import com.cartverse.cartversebackend.entity.User;
 import com.cartverse.cartversebackend.exception.EmailAlreadyExistsException;
 import com.cartverse.cartversebackend.exception.InvalidCredentialsException;
 import com.cartverse.cartversebackend.exception.UserNotFoundException;
+import com.cartverse.cartversebackend.jwt.JwtService;
 import com.cartverse.cartversebackend.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,17 +18,19 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder){
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
-    public void registerUser(RegisterRequest request){
+    public void registerUser(RegisterRequest request) {
 
         Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
 
-        if (existingUser.isPresent()){
+        if (existingUser.isPresent()) {
             throw new EmailAlreadyExistsException("User already Exist with this email.");
         }
 
@@ -39,20 +42,21 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void loginUser(LoginRequest request){
+    public String loginUser(LoginRequest request) {
 
         Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
 
-        if (existingUser.isEmpty()){
+        if (existingUser.isEmpty()) {
             throw new UserNotFoundException("No user found with this email.");
         }
         User user = existingUser.get();
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())){
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new InvalidCredentialsException("Incorrect password");
         }
-    }
 
+        return jwtService.generateToken(user.getEmail());
+    }
 
 
 }
